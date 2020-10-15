@@ -1,10 +1,16 @@
-FROM golang:1.12-alpine as builder
-WORKDIR /app
-COPY . .
-RUN go build -mod=vendor -o bin/hello
+# Python version
+FROM python:3.8-slim-buster
 
-FROM alpine
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-COPY --from=builder /app/bin/hello /usr/local/bin/
-CMD ["hello"]
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set work directory
+WORKDIR /code
+
+# Install dependencies
+COPY requirements.txt /code/
+RUN pip install -r requirements.txt
+
+# Copy project
+COPY . /code/
